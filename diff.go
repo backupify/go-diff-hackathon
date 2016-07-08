@@ -1,9 +1,11 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -30,33 +32,34 @@ func check(e error) {
 func main() {
 
 	var operations []Change
-	//read in list of changes here
-	diffFile, err := os.Open("diff.txt")
-	check(err)
+	/*
+		//read in list of changes here
+		diffFile, err := os.Open("diff.txt")
+		check(err)
 
-	defer diffFile.Close()
+		defer diffFile.Close()
 
-	//parse diff file into Go Change structs
-	//NOTE: scanner doesn't handle lines over ~65000 chars each
-	//depending on how we store diffs (assuming hexdecimal characters) this means we can store a max
-	//of about 30000 bytes 30k in a single diff line
-	scanner = bufio.NewScanner(diffFile)
+		//parse diff file into Go Change structs
+		//NOTE: scanner doesn't handle lines over ~65000 chars each
+		//depending on how we store diffs (assuming hexdecimal characters) this means we can store a max
+		//of about 30000 bytes 30k in a single diff line
+		scanner := bufio.NewScanner(diffFile)
 
-	for scanner.Scan() {
-		row := scanner.Text()
-		splitRow = strings.Split(row, "|")
-		rowChange := Change{splitRow[0], splitRow[1], splitRow[2], splitRow[3]}
-		operations = append(operations, rowChange)
-	}
+		for scanner.Scan() {
+			row := scanner.Text()
+			splitRow := strings.Split(row, "|")
+			rowChange := Change{ChangeOperation{strconv.ParseInt(splitRow[0],10,0)}}, int(splitRow[1]), int(splitRow[2]), splitRow[3]}
+			operations = append(operations, rowChange)
+		}
 
+		fmt.Println(operations)
+	*/
 	//operations[0] = Change{insert, 0, -1, }
 	//operations[0] = Change{delete, 0, 4, ""}
 	//operations[2] = Change{insert, 17, -1, "insert2"}
-	operations = append(operations, Change{insert, 0, -1, "abc"})
-	operations = append(operations, Change{delete, 3, 6, "abc"})
-
-	fmt.Println([]byte("abc"))
-
+	operations = append(operations, Change{delete, 19, 25, "abc"})
+	operations = append(operations, Change{insert, 19, 61, ", who was overcome with excitement, jumped"})
+	operations = append(operations, Change{delete, 108, 124, ""})
 	//read in reference text here
 	refFile, err := os.Open("tmpfile2.txt")
 	check(err)
