@@ -118,6 +118,8 @@ func main() {
 
     fmt.Printf("%v\n", hmap)
 
+
+    fmt.Printf("\n\n")
     oldPtr, newPtr := 0, 0
 
     // slice of changes
@@ -194,7 +196,7 @@ func main() {
         // do an insertion of remaining oldBytes
         insertOp := Operation{1, oldPtr, len(oldBytes), string(oldBytes[oldPtr:])}
 
-        fmt.Printf("%x\n", string(newBytes[len(newBytes)-1]))
+        //fmt.Printf("%x\n", string(newBytes[len(newBytes)-1]))
         operationList = append(operationList, insertOp)
     }
     if newPtr < len(newBytes){
