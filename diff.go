@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 )
 
 type ChangeOperation int
@@ -28,24 +29,26 @@ func check(e error) {
 
 func main() {
 
-	/*
-		//read in list of changes here
-		diffFile, err := os.Open("diff.txt")
-		check(err)
-
-		defer diffFile.Close()
-
-		//parse diff file into Go Change structs
-		//NOTE: scanner doesn't handle lines over ~65000 chars each
-		//depending on how we store diffs (assuming hexdecimal characters) this means we can store a max
-		//of about 30000 bytes 30k in a single diff line
-		scanner = bufio.NewScanner(diffFile)
-
-		for scanner.Scan() {
-			row := scanner.Text()
-		}
-	*/
 	var operations []Change
+	//read in list of changes here
+	diffFile, err := os.Open("diff.txt")
+	check(err)
+
+	defer diffFile.Close()
+
+	//parse diff file into Go Change structs
+	//NOTE: scanner doesn't handle lines over ~65000 chars each
+	//depending on how we store diffs (assuming hexdecimal characters) this means we can store a max
+	//of about 30000 bytes 30k in a single diff line
+	scanner = bufio.NewScanner(diffFile)
+
+	for scanner.Scan() {
+		row := scanner.Text()
+		splitRow = strings.Split(row, "|")
+		rowChange := Change{splitRow[0], splitRow[1], splitRow[2], splitRow[3]}
+		operations = append(operations, rowChange)
+	}
+
 	//operations[0] = Change{insert, 0, -1, }
 	//operations[0] = Change{delete, 0, 4, ""}
 	//operations[2] = Change{insert, 17, -1, "insert2"}
