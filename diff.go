@@ -1,63 +1,82 @@
 package main
 
 import (
-    "strings"
-    "os"
-    "fmt"
-    "io/ioutil"
+	"bufio"
+	"fmt"
+	"io/ioutil"
+	"os"
 )
 
 type ChangeOperation int
 
 const (
-  insert ChangeOperation = iota //insert in front of given character
-  delete ChangeOperation = iota //delete on inclusive range
+	insert ChangeOperation = iota //insert in front of given character
+	delete ChangeOperation = iota //delete on inclusive range
 )
 
 type Change struct {
-    Operation ChangeOperation
-    Start int
-    End int
-    Text string
+	Operation ChangeOperation
+	Start     int
+	End       int
+	Text      string
 }
 
-func main(){
+func check(e error) {
+	if e != nil {
+		panic(e)
+	}
+}
 
-  //read in list of changes here
-  var operations [3]Change
-  //operations[0] = Change{insert, 0, -1, "insert"}
-  operations[0] = Change{delete, 0,4, ""}
-  //operations[2] = Change{insert, 17, -1, "insert2"}
+func main() {
 
-  fmt.Println(operations)
+	//read in list of changes here
+	diffFile, err := os.Open("diff.txt")
+	check(err)
 
-  //read in reference text here
-  var referenceBytes, err = ioutil.ReadFile("reference.txt")
-  if err != nil {
-    fmt.Println(err)
-    //log.Fatal(err)
-  }
-  var reference = string(referenceBytes)
+	defer diffFile.Close()
 
-  fmt.Printf("%s", reference)
+	//parse diff file into Go Change structs
+	//NOTE: scanner doesn't handle lines over ~65000 chars each
+	//depending on how we store diffs (assuming hexdecimal characters) this means we can store a max
+	//of about 30000 bytes 30k in a single diff line
+	scanner = bufio.NewScanner(diffFile)
 
-  for _, current := range operations {
-    if current.Operation == insert {
-      reference = strings.Join([]string{reference[:current.Start], current.Text, reference[current.Start:]},"")
-    } else if current.Operation == delete {
-      reference = strings.Join([]string{reference[:current.Start], reference[current.End+1:]},"")
-    }
-  }
+	for scanner.Scan() {
+		row := scanner.Text()
+	}
 
-  fmt.Printf("%s", reference)
+	var operations [1]Change
+	//operations[0] = Change{insert, 0, -1, }
+	//operations[0] = Change{delete, 0, 4, ""}
+	//operations[2] = Change{insert, 17, -1, "insert2"}
+	operations[0] = Change{insert, 6, -1, "abc"}
 
-  //save new string
-  var newFile, err1  = os.Create("new.txt")
-  if err1 != nil {
-    fmt.Println(err1)
-    //log.Fatal(err1)
-  }
-  newFile.WriteString(reference)
+	fmt.Println([]byte("abc"))
 
+	//read in reference text here
+	referenceBytes, err := ioutil.ReadFile("tmpfile2.txt")
+	fmt.Println(string(referenceBytes))
+	check(err)
+
+	fmt.Println(referenceBytes)
+
+	for _, current := range operations {
+		fmt.Println(current)
+		if current.Operation == insert {
+			referenceBytes = append(referenceBytes[:current.Start], append([]byte(current.Text), referenceBytes[current.Start:]...)...)
+		} else if current.Operation == delete {
+			referenceBytes = append(referenceBytes[:current.Start], referenceBytes[current.End:]...)
+		}
+	}
+
+	fmt.Println(referenceBytes)
+
+	//dump bytes into file
+	newFile, err := os.Create("new.bin")
+	check(err)
+
+	defer newFile.Close()
+
+	newFile.Write(referenceBytes)
 
 }
