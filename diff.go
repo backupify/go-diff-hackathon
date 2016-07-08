@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -29,6 +30,20 @@ func check(e error) {
 func main() {
 
 	//read in list of changes here
+	diffFile, err := os.Open("diff.txt")
+	check(err)
+
+	defer diffFile.Close()
+
+	//parse diff file into Go Change structs
+	//NOTE: scanner doesn't handle lines over ~65000 chars each
+	//depending on how we store diffs (assuming hexdecimal characters) this means we can store a max
+	//of about 30000 bytes 30k in a single diff line
+	scanner = bufio.NewScanner(diffFile)
+
+	for scanner.Scan() {
+		row := scanner.Text()
+	}
 
 	var operations [1]Change
 	//operations[0] = Change{insert, 0, -1, }
@@ -39,7 +54,7 @@ func main() {
 	fmt.Println([]byte("abc"))
 
 	//read in reference text here
-	var referenceBytes, err = ioutil.ReadFile("tmpfile2.txt")
+	referenceBytes, err := ioutil.ReadFile("tmpfile2.txt")
 	fmt.Println(string(referenceBytes))
 	check(err)
 
@@ -50,15 +65,15 @@ func main() {
 		if current.Operation == insert {
 			referenceBytes = append(referenceBytes[:current.Start], append([]byte(current.Text), referenceBytes[current.Start:]...)...)
 		} else if current.Operation == delete {
-			referenceBytes = append(referenceBytes[:current.Start], referenceBytes[current.End+1:]...)
+			referenceBytes = append(referenceBytes[:current.Start], referenceBytes[current.End:]...)
 		}
 	}
 
 	fmt.Println(referenceBytes)
 
 	//dump bytes into file
-	var newFile, err1 = os.Create("new.bin")
-	check(err1)
+	newFile, err := os.Create("new.bin")
+	check(err)
 
 	defer newFile.Close()
 
