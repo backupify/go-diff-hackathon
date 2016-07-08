@@ -1,12 +1,9 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"io/ioutil"
 	"os"
-	"strconv"
-	"strings"
 )
 
 type ChangeOperation int
@@ -61,12 +58,12 @@ func main() {
 	operations = append(operations, Change{insert, 19, 61, ", who was overcome with excitement, jumped"})
 	operations = append(operations, Change{delete, 108, 124, ""})
 	//read in reference text here
-	refFile, err := os.Open("tmpfile2.txt")
-	check(err)
+	//refFile, err := os.Open("tmpfile2.txt")
+	//check(err)
 
-	defer refFile.Close()
+	//defer refFile.Close()
 
-	referenceBytes, err := ioutil.ReadFile("tmpfile2.txt")
+	referenceBytes, err := ioutil.ReadFile("tmpfile1.txt")
 	fmt.Println("Before: ", (referenceBytes))
 	check(err)
 
@@ -127,7 +124,7 @@ func main() {
 	fmt.Println("After:  ", finishedBytes)
 
 	//dump bytes into file
-	newFile, err := os.Create("new.bin")
+	newFile, err := os.Create("new.txt")
 	check(err)
 
 	defer newFile.Close()
